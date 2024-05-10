@@ -4,9 +4,9 @@ class Program
 {
     static void Main(string[] args)
     {
-        string inputFolderPath = @"ORIGINAL_FOLDER_YOU_WANT_TO_PROCESS";
-        string outputFolderPath = @"OUTPUT_FOLDER_OF_PROCESSED_FILES";
-        string errorFolderPath = @"ERROR_FOLDER";
+        string inputFolderPath = @"ORIGINAL_FOLDER_YOU_WANT_TO_PROCESS";                                                                                                // Path of original input PDFs folder
+        string outputFolderPath = @"OUTPUT_FOLDER_OF_PROCESSED_FILES";                                                                                                  // Destination path for output of processed PDFs files
+        string errorFolderPath = @"ERROR_FOLDER";                                                                                                                       // Destination path for error files if any encounter errors. 
 
         if (!Directory.Exists(inputFolderPath))                                                                                                                         // Check if the input and output folders exist
         {
@@ -33,7 +33,7 @@ class Program
                     pdf.Security.Encrypt(string.Empty,"1",PdfPermissionsFlags.FillFields,PdfEncryptionKeySize.Key128Bit);                                               // Encrypt the folder so its not editable. "Open and Permission password cannot be the same"
                     string outputFile = Path.Combine(outputFolderPath, Path.GetFileName(pdfFile));                                                                      // Save the modified PDF to the output folder
                     pdf.SaveToFile(outputFile);
-                    Console.WriteLine($"\tFlattening signatures completed for: {Path.GetFileName(pdfFile)}");
+                    Console.WriteLine($"\tEncrypting file completed for: {Path.GetFileName(pdfFile)}");
                 }// end of if-statement
                 else
                 {
@@ -48,7 +48,7 @@ class Program
             }// end of catch
         }// end of foreach
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("All PDF files flattened successfully.");
+        Console.WriteLine("All PDF files encrpted successfully.");
         Console.ForegroundColor = ConsoleColor.Gray;
     }// end of main
 }// end of class
