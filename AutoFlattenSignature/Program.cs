@@ -4,7 +4,7 @@ using Spire.Pdf.Security;
 
 class Program
 {
-    string inputFolderPath = @"ORIGINAL_FOLDER_YOU_WANT_TO_PROCESS";                                                                                              // Path of original input PDFs folder
+    string inputFolderPath = @"ORIGINAL_FOLDER_YOU_WANT_TO_PROCESS";                                                                                                // Path of original input PDFs folder
     string outputFolderPath = @"OUTPUT_FOLDER_OF_PROCESSED_FILES";                                                                                                  // Destination path for output of processed PDFs files
     string errorFolderPath = @"ERROR_FOLDER";                                                                                                                       // Destination path for error files if any encounter errors. 
 
@@ -31,6 +31,7 @@ class Program
     {
         try
         {
+            Console.ForegroundColor = ConsoleColor.Gray;
             if (!Directory.Exists(inputFolderPath))                                                                                                                     // Check if the input and output folders exist
             {
                 Console.WriteLine("Input folder does not exist.");
@@ -42,16 +43,17 @@ class Program
                 return;
             }// end of if-statement
 
-            string[] pdfFiles = Directory.GetFiles(inputFolderPath, "*.pdf");                                                                                           // Get all PDF files in the input folder
+            string[] pdfFiles = Directory.GetFiles(inputFolderPath, "*.pdf");                                                                                           // Get all PDF files in the input folder. Store them in a string array.
+            Console.WriteLine($"Found \"{pdfFiles.Length}\" PDF file(s) in \"{Path.GetFileName(inputFolderPath)}\". \nStarting Encryption...\n");
             foreach (string pdfFile in pdfFiles)                                                                                                                        // Iterate through each PDF file
             {
                 ProcessDocument(pdfFile);
             }// end of foreach
-        }
+        }// end of try.
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred in Run(): {ex.Message}");
-        }
+        }// end of try-catch
     }// end of Run
 
     /// <summary>
@@ -63,25 +65,32 @@ class Program
         Console.WriteLine($"Processing file: {Path.GetFileName(filePath)}");
         try
         {
-            pdf.LoadFromFile(filePath);                                                                                                                             // Load the PDF document
+            pdf.LoadFromFile(filePath);                                                                                                                             // Load the PDF document from input folder
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine($"\tFile loaded successfully");
 
             if (pdf != null)                                                                                                                                        // Check if the document is successfully loaded
             {
                 pdf.Security.Encrypt(string.Empty, ownerPassword, PdfPermissionsFlags.Print, PdfEncryptionKeySize.Key128Bit);                                       // *** Only allow printing *** Encrypt the folder so its not editable. "Open and Permission password cannot be the same"
-
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.WriteLine($"\tFile encrypted successfully");
             }// end of if-statement
 
             string outputFile = Path.Combine(outputFolderPath, Path.GetFileNameWithoutExtension(filePath) + "_Locked.PDF");                                         // Get traget out folder and file path and combine them + edit file name
             pdf.SaveToFile(outputFile);                                                                                                                             // Save the modified PDF to the output folder
-            Console.WriteLine($"\tEncrypting file completed for: {Path.GetFileNameWithoutExtension(filePath)}");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine($"\tFile {Path.GetFileNameWithoutExtension(filePath)} encryption is completed.");
         }// end of try-catch
         catch (Exception ex)
         {
             MoveFileToTargetFolder(filePath);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Error processing file {Path.GetFileNameWithoutExtension(filePath)}: {ex.Message}");
-            Console.ForegroundColor = ConsoleColor.Gray;
         }// end of catch
+        finally
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
     }// end of ProcessDocument
 
     /// <summary>
@@ -93,5 +102,5 @@ class Program
         string fileName = Path.GetFileName(filePath);                                                                                                                      // Get input file path 
         string targetFilePath = Path.Combine(errorFolderPath, fileName);                                                                                                   // Grab the target folder and the input file path and combine them
         File.Move(filePath, targetFilePath);                                                                                                                               // Move the file to target foler.
-    }
+    }// end of MoveFileToTargetFolder
 }// end of class
