@@ -26,3 +26,6 @@ This is a C# program for encrypting PDF files, making them non-editable. It proc
 2. Compile and run the program.
 3. Monitor the console output for progress and any error messages.
 
+# Important Note
+
+This program uses a licensed version of Spire.Office 7.4.10. If you are using a free version or do not have a license, your output will be limited or have a watermark.
